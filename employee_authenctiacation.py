@@ -28,11 +28,11 @@ def lambda_handler(event, context):
             print('Person Found: ', face['Item'])
             return build_response(200, {
             'Message': 'Success',
-            'firstName': face['Item']['FirstName'],
-            'lastName': face['Item']['LastName']
+            'firstName': face['Item']['firstName'],
+            'lastName': face['Item']['lastName']
             })
-        print('Person could not be recognized.')
-        return build_response(403, {'Message': 'Person Not Found'})
+    print('Person could not be recognized.')
+    return build_response(403, {'Message': 'Person Not Found'})
 
 def build_response(status_code, body=None):
     response = {
