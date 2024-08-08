@@ -1,26 +1,21 @@
 import boto3
 import json
-from datetime import datetime
-import pytz  # Import pytz for timezone handling
 
 s3 = boto3.client('s3')
 rekognition = boto3.client('rekognition', region_name='us-east-1')
+dynamodbTableName = 'employee'
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-ses = boto3.client('ses', region_name='us-east-1')  # SES client
-
 employeeTable = dynamodb.Table('employee')
-attendanceTable = dynamodb.Table('attendance')
 bucketName = 'mars-employees-daily-images'
 
 def lambda_handler(event, context):
-    try:
-        print(event)
-        objectKey = event['queryStringParameters']['objectKey']
-        image_bytes = s3.get_object(Bucket=bucketName, Key=objectKey)['Body'].read()
-        response = rekognition.search_faces_by_image(
-            CollectionId='employees',
-            Image={'Bytes': image_bytes}
-        )
+    print(event)
+    objectKey = event['queryStringParameters']['objectKey']
+    image_bytes = s3.get_object(Bucket=bucketName, Key=objectKey)['Body'].read()
+    response = rekognition.search_faces_by_image(
+        CollectionId='employees',
+        Image={'Bytes': image_bytes}
+    )
 
         for match in response['FaceMatches']:
             print(match['Face']['FaceId'], match['Face']['Confidence'])
@@ -96,6 +91,22 @@ def send_unregistered_person_email(objectKey):
         print("Email sent! Message ID:", response['MessageId'])
     except Exception as e:
         print("Error sending email:", e)
+    for match in response['FaceMatches']:
+        print(match['Face']['FaceId'], match['Face']['Confidence'])
+        face = employeeTable.get_item(
+            Key={
+                'rekognitionId': match['Face']['FaceId']
+            }
+        )
+        if 'Item' in face:
+            print('Person Found: ', face['Item'])
+            return build_response(200, {
+            'Message': 'Success',
+            'firstName': face['Item']['firstName'],
+            'lastName': face['Item']['lastName']
+            })
+    print('Person could not be recognized.')
+    return build_response(403, {'Message': 'Person Not Found'})
 
 def build_response(status_code, body=None):
     response = {
