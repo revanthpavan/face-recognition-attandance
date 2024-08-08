@@ -16,14 +16,14 @@ def lambda_handler(event, context):
             # Construct the email
             subject = 'New Attendance Record'
             body = f"{first_name} {last_name}, your attandance has been recorded on {date} at {time}. Have a great day!"
-            recipient = 'revanthpavan@outlook.com'  # Replace with actual recipient email
+            recipient = 'xxxxxxx@xxxxx.com'  # Replace with actual recipient email
 
             # Send the email
             send_email(subject, body, recipient)
 
 def send_email(subject, body, recipient):
     response = ses.send_email(
-        Source='pavanrevanth97@gmail.com',  # Replace with your SES verified email
+        Source='xxxxxxx@gmail.com',  # Replace with your SES verified email
         Destination={
             'ToAddresses': [recipient],
         },

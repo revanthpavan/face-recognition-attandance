@@ -79,8 +79,8 @@ def record_attendance(faceId, firstName, lastName):
     )
 
 def send_unregistered_person_email(objectKey):
-    sender = 'pavanrevanth97@gmail.com'  # Replace with your SES verified sender email
-    recipient = 'revanthpavan@outlook.com'  # Replace with the recipient's email
+    sender = 'xxxxxxx@gmail.com'  # Replace with your SES verified sender email
+    recipient = 'xxxxxx@outlook.com'  # Replace with the recipient's email
     subject = 'Unregistered Person Detected'
     body_text = f'A person in the image {objectKey} could not be recognized as registered.'
 
